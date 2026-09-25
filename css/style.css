@@ -573,22 +573,39 @@ ul {
   align-items: flex-start;
   min-width: 0;
   padding: 1rem 0.9rem 1.05rem;
-  border: 1px solid var(--color-line);
+  border: 1px solid #c5dbe8;
   border-radius: 1rem;
   background: #fff;
+  box-shadow: 0 8px 18px rgba(30, 120, 181, 0.06);
 }
 
 .care__icon {
-  width: 2.6rem;
-  height: 2.6rem;
-  padding: 0.3rem;
+  width: 4.5rem;
+  height: 4.5rem;
+  padding: 0.45rem;
   object-fit: contain;
-  background: var(--color-pop-soft);
+  background: #fff3c4;
   border-radius: 50%;
 }
 
+.care-card:nth-child(4n + 1) .care__icon {
+  background: #fff3c4;
+}
+
+.care-card:nth-child(4n + 2) .care__icon {
+  background: #d9f0fb;
+}
+
+.care-card:nth-child(4n + 3) .care__icon {
+  background: #e5f6ec;
+}
+
+.care-card:nth-child(4n) .care__icon {
+  background: #fde8e0;
+}
+
 .care__name {
-  margin-top: 0.65rem;
+  margin-top: 0.8rem;
   font-size: 0.98rem;
   font-weight: 500;
   letter-spacing: 0.04em;
@@ -603,12 +620,17 @@ ul {
   text-wrap: pretty;
 }
 
-.care__desc small {
-  display: block;
-  margin-top: 0.25rem;
-  font-family: var(--font-label);
+.care__badge {
+  display: inline-block;
+  margin-top: 0.45rem;
+  padding: 0.12rem 0.4rem;
+  border: 1px solid var(--color-line);
+  font-family: "DM Sans", sans-serif;
   font-size: 0.68rem;
+  font-weight: 500;
   letter-spacing: 0.04em;
+  line-height: 1.4;
+  color: var(--color-sub);
 }
 
 .clinic {
@@ -916,6 +938,15 @@ ul {
   color: var(--color-sub);
 }
 
+.hours th.is-today,
+.hours td.is-today {
+  background: #d7eef8;
+}
+
+.hours thead th.is-today {
+  color: var(--color-pop);
+}
+
 .hours__mark {
   color: var(--color-pop);
   font-size: 1rem;
@@ -1209,6 +1240,28 @@ body.nav-open {
 
   .care-grid {
     grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .care-card:nth-child(1) .care__icon,
+  .care-card:nth-child(8) .care__icon,
+  .care-card:nth-child(10) .care__icon {
+    background: #fff3c4;
+  }
+
+  .care-card:nth-child(2) .care__icon,
+  .care-card:nth-child(5) .care__icon,
+  .care-card:nth-child(9) .care__icon {
+    background: #d9f0fb;
+  }
+
+  .care-card:nth-child(3) .care__icon,
+  .care-card:nth-child(6) .care__icon {
+    background: #e5f6ec;
+  }
+
+  .care-card:nth-child(4) .care__icon,
+  .care-card:nth-child(7) .care__icon {
+    background: #fde8e0;
   }
 
   .access__grid {

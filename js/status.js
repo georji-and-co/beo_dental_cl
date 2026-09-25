@@ -1,6 +1,7 @@
 (function () {
   var DAY_LABELS = ["日", "月", "火", "水", "木", "金", "土"];
   var WEEKDAY_INDEX = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+  // 土日の終了時間は要確認（19:00 or 20:00）
   var SLOT = [
     ["09:00", "13:00"],
     ["14:30", "20:00"]
@@ -168,35 +169,13 @@
     return names.join("・") + "は休診";
   }
 
-  function renderTable() {
+  function highlightToday() {
     var table = document.getElementById("hours-table");
     if (!table) return;
-    var order = [1, 2, 3, 4, 5, 6, 0];
-    var head = "<tr><th scope=\"col\">診療時間</th>";
-    order.forEach(function (d) {
-      var closedHead = !HOURS[d] || HOURS[d].length === 0;
-      head += "<th scope=\"col\"" + (closedHead ? " class=\"is-closed\"" : "") + ">" + DAY_LABELS[d] + "</th>";
+    var today = String(tokyoNow(new Date()).weekday);
+    table.querySelectorAll("[data-day]").forEach(function (cell) {
+      cell.classList.toggle("is-today", cell.getAttribute("data-day") === today);
     });
-    head += "</tr>";
-
-    var body = "";
-    SLOT.forEach(function (slot) {
-      body += "<tr><th scope=\"row\">" + formatRange(slot) + "</th>";
-      order.forEach(function (d) {
-        var open = (HOURS[d] || []).some(function (item) {
-          return item[0] === slot[0] && item[1] === slot[1];
-        });
-        body += open
-          ? '<td><span class="hours__mark" aria-label="診療">●</span></td>'
-          : '<td class="is-closed"><span class="hours__off" aria-label="休診">休</span></td>';
-      });
-      body += "</tr>";
-    });
-
-    table.innerHTML = "<thead>" + head + "</thead><tbody>" + body + "</tbody>";
-
-    var note = document.getElementById("hours-note");
-    if (note) note.textContent = closedDayLabel() + "です。";
   }
 
   function renderSummary() {
@@ -214,7 +193,7 @@
 
   function refresh() {
     renderBanner();
-    renderTable();
+    highlightToday();
     renderSummary();
   }
 
