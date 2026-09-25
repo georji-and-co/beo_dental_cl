@@ -109,10 +109,6 @@
     return Number(bits[0]) + ":" + bits[1];
   }
 
-  function formatRange(slot) {
-    return formatTime(slot[0]) + "–" + formatTime(slot[1]);
-  }
-
   function slotsFor(y, m, d) {
     if (CLOSED_DATES.indexOf(keyOf(y, m, d)) !== -1) return [];
     return HOURS[weekdayOf(y, m, d)] || [];
@@ -159,16 +155,6 @@
       "</span></p>";
   }
 
-  function closedDayLabel() {
-    var names = [];
-    var d;
-    for (d = 0; d < 7; d += 1) {
-      if (!HOURS[d] || HOURS[d].length === 0) names.push(DAY_LABELS[d] + "曜");
-    }
-    names.push("祝日");
-    return names.join("・") + "は休診";
-  }
-
   function highlightToday() {
     var table = document.getElementById("hours-table");
     if (!table) return;
@@ -178,23 +164,9 @@
     });
   }
 
-  function renderSummary() {
-    var el = document.getElementById("hours-summary");
-    if (!el) return;
-    var openDays = [];
-    var d;
-    for (d = 1; d <= 6; d += 1) {
-      if (HOURS[d] && HOURS[d].length) openDays.push(DAY_LABELS[d]);
-    }
-    if (HOURS[0] && HOURS[0].length) openDays.push(DAY_LABELS[0]);
-    var ranges = SLOT.map(formatRange).join(" / ");
-    el.textContent = openDays.join("・") + " " + ranges + "　" + closedDayLabel();
-  }
-
   function refresh() {
     renderBanner();
     highlightToday();
-    renderSummary();
   }
 
   refresh();
