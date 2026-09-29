@@ -1,20 +1,22 @@
 (function () {
   var DAY_LABELS = ["日", "月", "火", "水", "木", "金", "土"];
   var WEEKDAY_INDEX = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
-  // 土日の最終受付19:00は院長に確認済み。平日の最終受付は要確認
+  // 最終受付19:00は院長に確認済み（全診療日）。診療終了は20:00
+  var AFTERNOON = ["14:30", "20:00"];
+  AFTERNOON.lastReception = "19:00";
   var SLOT = [
     ["09:00", "13:00"],
-    ["14:30", "20:00"]
+    AFTERNOON
   ];
 
   var HOURS = {
-    0: { slots: SLOT, lastReception: "19:00" },
+    0: { slots: SLOT },
     1: { slots: SLOT },
     2: { slots: SLOT },
     3: { slots: [] },
     4: { slots: SLOT },
     5: { slots: SLOT },
-    6: { slots: SLOT, lastReception: "19:00" }
+    6: { slots: SLOT }
   };
 
   var CLOSED_DATES = [
@@ -127,8 +129,7 @@
         return {
           open: true,
           until: slots[i][1],
-          dayClose: slots[slots.length - 1][1],
-          lastReception: conf.lastReception || "",
+          lastReception: slots[i].lastReception || "",
           minutes: now.minutes
         };
       }
@@ -163,7 +164,7 @@
     } else if (status.lastReception && status.minutes > toMinutes(status.lastReception)) {
       text = "ただいま診療中｜受付は終了しました（" + formatTime(status.until) + "まで）";
     } else if (status.lastReception) {
-      text = "ただいま診療中｜本日 " + formatTime(status.dayClose) + "まで（最終受付 " + formatTime(status.lastReception) + "）";
+      text = "ただいま診療中｜本日 " + formatTime(status.until) + "まで（最終受付 " + formatTime(status.lastReception) + "）";
     } else {
       text = "ただいま診療中｜本日 " + formatTime(status.until) + "まで";
     }
@@ -179,26 +180,6 @@
     var today = String(tokyoNow(new Date()).weekday);
     table.querySelectorAll("[data-day]").forEach(function (cell) {
       cell.classList.toggle("is-today", cell.getAttribute("data-day") === today);
-    });
-  }
-
-  function receptionGroups() {
-    var order = [1, 2, 4, 5, 6, 0];
-    var map = {};
-    var keys = [];
-    order.forEach(function (d) {
-      var conf = HOURS[d];
-      if (!conf || !conf.lastReception || !conf.slots || !conf.slots.length) return;
-      var close = conf.slots[conf.slots.length - 1][1];
-      var key = conf.lastReception + "|" + close;
-      if (!map[key]) {
-        map[key] = { days: [], time: conf.lastReception, close: close };
-        keys.push(key);
-      }
-      map[key].days.push(DAY_LABELS[d]);
-    });
-    return keys.map(function (key) {
-      return map[key];
     });
   }
 
@@ -221,23 +202,20 @@
         closedDays.push(DAY_LABELS[d] + "曜");
       }
     });
-    var groups = receptionGroups();
-    var reception = groups.length
-      ? "（" + groups.map(function (group) {
-          return group.days.join("") + "の最終受付 " + formatTime(group.time);
-        }).join("、") + "）"
-      : "";
+    var reception = "";
+    var noteText = "";
+    SLOT.forEach(function (slot) {
+      if (!slot.lastReception) return;
+      reception = "（最終受付 " + formatTime(slot.lastReception) + "）";
+      noteText = "最終受付は" + formatTime(slot.lastReception) + "です（診療は" + formatTime(slot[1]) + "まで）。";
+    });
     closedDays.push("祝日");
     var summary = document.getElementById("hours-summary");
     if (summary) {
       summary.textContent = openDays.join("・") + " " + ranges + reception + "　" + closedDays.join("・") + "は休診";
     }
     var note = document.getElementById("hours-reception");
-    if (note) {
-      note.textContent = groups.map(function (group) {
-        return group.days.join("") + "の最終受付は" + formatTime(group.time) + "です（診療は" + formatTime(group.close) + "まで）。";
-      }).join("");
-    }
+    if (note) note.textContent = noteText;
   }
 
   function refresh() {
