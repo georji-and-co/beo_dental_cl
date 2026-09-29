@@ -969,6 +969,15 @@ ul {
   letter-spacing: 0.08em;
 }
 
+.hours__reception {
+  margin: 0;
+  padding: 0.85rem 1.15rem 0;
+  color: var(--color-sub);
+  font-size: 0.78rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
 .hours__note {
   margin: 0;
   padding: 0.85rem 1.15rem 1.15rem;
